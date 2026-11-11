@@ -3,46 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LANGKAH Store</title>
+<title>LANGKAH Store - Bandung</title>
 <style>
-body{font-family:system-ui;max-width:480px;margin:auto;background:#f6f6f6;padding:0 12px 100px}
-.banner{background:#111;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:20px;border-radius:16px}
-.banner h1{margin:0;font-size:32px}
-.cats{display:flex;gap:8px;margin:14px 0;overflow:auto}
-.cat{padding:8px 14px;border-radius:20px;border:1px solid #111;background:#fff;cursor:pointer}
-.cat.active{background:#ff6a00;color:#fff;border-color:#ff6a00}
-.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:12px;text-align:center}
-.card button{background:#ff6a00;color:#fff;border:0;padding:11px;width:100%;border-radius:10px;cursor:pointer;font-weight:700}
-.cart-bar{position:sticky;bottom:10px;background:#111;color:#fff;padding:12px;border-radius:12px;text-align:center}
-.cart-bar button{background:#25D366;border:0;padding:8px 12px;border-radius:8px;margin-left:6px;font-weight:700}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f5f5f5}
+.header{background:#111;color:#fff;padding:15px;text-align:center;position:sticky;top:0;z-index:10}
+.header h1{font-size:22px;letter-spacing:2px}
+.header p{font-size:12px;color:#ccc}
+.banner{background:#111;color:#fff;padding:20px;text-align:center}
+.banner h2{font-size:26px}
+.banner p{font-size:13px;color:#ccc;margin-top:5px}
+.banner button{background:#ff6b00;color:#fff;border:none;padding:10px 20px;border-radius:20px;margin-top:12px;font-weight:bold}
+.search{padding:12px}
+.search input{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:15px}
+.filter{display:flex;gap:8px;padding:0 12px;overflow:auto}
+.filter button{padding:8px 16px;border-radius:20px;border:1px solid #ddd;background:#fff;white-space:nowrap}
+.filter button.active{background:#111;color:#fff}
+.cartbar{background:#ff6b00;color:#fff;margin:12px;padding:12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card img{width:100%;height:150px;object-fit:cover;background:#eee}
+.card-body{padding:10px}
+.card-body h3{font-size:14px}
+.card-body p{font-size:12px;color:#888}
+.price{color:#ff6b00;font-weight:bold;margin:6px 0}
+.add{width:100%;background:#ff6b00;color:#fff;border:none;padding:9px;border-radius:8px;font-weight:bold}
+.map{padding:12px}
+.map iframe{width:100%;height:220px;border:0;border-radius:12px}
+.map-box{background:#fff;padding:12px;border-radius:12px}
+.footer{text-align:center;padding:20px;color:#888;font-size:12px}
+#cartModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
+.modal{background:#fff;margin:40px 15px;padding:15px;border-radius:12px;max-height:80vh;overflow:auto}
+.item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}
+.qty button{padding:2px 8px;margin:0 3px}
+.checkout{width:100%;background:#25D366;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:bold;margin-top:12px;font-size:15px}
+.close{width:100%;background:#eee;border:none;padding:10px;border-radius:10px;margin-top:8px}
 </style>
 </head>
 <body>
-<header class="banner"><div><h1>Koleksi Baru</h1><p>LANGKAH Store - Bandung</p></div><div>👟</div></header>
-<div class="cats">
-<button class="cat active" data-cat="all">Semua</button>
-<button class="cat" data-cat="pria">Pria</button>
-<button class="cat" data-cat="wanita">Wanita</button>
-<button class="cat" data-cat="anak">Anak</button>
-<button class="cat" data-cat="sandal">Sandal</button>
-</div>
-<main id="produk-list"></main>
-<div class="cart-bar">Keranjang: <b id="cart-count">0</b> | Total: Rp <b id="cart-total">0</b> <button onclick="checkout()">Checkout WA</button></div>
+<div class="header"><h1>LANGKAH STORE</h1><p>Bandung • Sepatu & Sandal Original</p></div>
+<div class="banner"><p>🔥 KOLEKSI BARU</p><h2>LANGKAH Store - Bandung</h2><p>Sepatu & Sandal Pilihan, Harga Bersahabat</p><button onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})">Belanja Sekarang ↓</button></div>
+<div class="search"><input id="searchInput" oninput="render()" placeholder="🔍 Cari sepatu / sandal..."></div>
+<div class="filter"><button class="active" onclick="setCat('Semua',this)">Semua</button><button onclick="setCat('Pria',this)">Pria</button><button onclick="setCat('Wanita',this)">Wanita</button><button onclick="setCat('Anak',this)">Anak</button></div>
+<div class="cartbar" onclick="openCart()"><span>🛒 Keranjang <span id="cartCount">0</span></span><span>Total: Rp <span id="cartTotalTop">0</span> ›</span></div>
+<div class="grid" id="grid"></div>
+<div class="map"><div class="map-box"><h3>📍 Lokasi Toko</h3><p style="font-size:13px;color:#666;margin:6px 0">LANGKAH Store - Bandung, Jawa Barat</p><iframe src="https://www.google.com/maps?q=Bandung,Jawa+Barat&output=embed"></iframe><a href="https://www.google.com/maps/search/?api=1&query=Bandung,Jawa+Barat" target="_blank" style="display:block;text-align:center;margin-top:8px;color:#ff6b00;font-weight:bold;text-decoration:none">Buka di Google Maps →</a></div></div>
+<div class="footer">© 2026 LANGKAH Store - Bandung<br>Order via WhatsApp, Fast Respon</div>
+<div id="cartModal"><div class="modal"><h3>🛒 Keranjang Kamu</h3><div id="cartList"></div><h3 style="margin-top:12px">Total: Rp <span id="cartTotal">0</span></h3><button class="checkout" onclick="checkout()">Checkout via WA</button><button class="close" onclick="closeCart()">Tutup</button></div></div>
 <script>
-const produk=[
-{id:1,nama:"Sepatu Sneakers Putih",harga:185000,kat:"pria",ukuran:"38-44",emoji:"👟"},
-{id:2,nama:"Sandal Jepit Hitam",harga:65000,kat:"sandal",ukuran:"38-44",emoji:"🩴"},
-{id:3,nama:"Sepatu Running Abu",harga:220000,kat:"pria",ukuran:"38-44",emoji:"👟"},
-{id:4,nama:"Sandal Slide Coklat",harga:85000,kat:"sandal",ukuran:"38-44",emoji:"🩴"},
-{id:5,nama:"Sepatu Sneakers Wanita Pink",harga:195000,kat:"wanita",ukuran:"36-41",emoji:"👟"},
-{id:6,nama:"Sandal Anak Dino Lucu",harga:55000,kat:"anak",ukuran:"28-35",emoji:"🦖"},
+const products=[
+{id:1,name:"Sepatu Putih SUP",cat:"Wanita",price:95000,img:"produk1.jpg"},
+{id:2,name:"Sandal Jepit Hitam",cat:"Pria",price:45000,img:"produk2.jpeg"},
+{id:3,name:"Sepatu Sport Abu",cat:"Pria",price:95000,img:"produk3.jpeg"},
+{id:4,name:"Sandal Jackson",cat:"Pria",price:65000,img:"produk4.jpg"},
+{id:5,name:"Sepatu Pink Anak",cat:"Anak",price:85000,img:"produk5.webp"},
+{id:6,name:"Sandal Dino Hijau",cat:"Anak",price:75000,img:"produk6.jpg"},
 ];
-let cart=[],filter="all";
-function render(){const list=document.getElementById('produk-list');list.innerHTML=produk.filter(p=>filter==="all"||p.kat===filter).map(p=>`<div class="card"><div style="font-size:80px">${p.emoji}</div><h3>${p.nama}</h3><p>Rp ${p.harga.toLocaleString('id-ID')} - Ukuran ${p.ukuran}</p><button onclick="tambah(${p.id})">+ Keranjang</button></div>`).join('');}
-function tambah(id){cart.push(produk.find(p=>p.id===id));update();}
-function update(){document.getElementById('cart-count').innerText=cart.length;document.getElementById('cart-total').innerText=cart.reduce((a,b)=>a+b.harga,0).toLocaleString('id-ID');}
-function checkout(){const pesan=encodeURIComponent("Halo LANGKAH Store, saya mau pesan:\n"+cart.map(c=>"- "+c.nama).join("\n"));window.open("https://wa.me/6283843653291?text="+pesan,"_blank");}
-document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.cat;render();});
+let cart={}; let curCat="Semua";
+function setCat(c,el){curCat=c;document.querySelectorAll('.filter button').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function render(){
+ let q=document.getElementById('searchInput').value.toLowerCase();
+ let list=products.filter(p=>(curCat==="Semua"||p.cat===curCat)&&p.name.toLowerCase().includes(q));
+ document.getElementById('grid').innerHTML=list.map(p=>`<div class="card"><img src="${p.img}"><div class="card-body"><h3>${p.name}</h3><p>${p.cat} • Stok Tersedia</p><div class="price">Rp ${p.price.toLocaleString('id-ID')}</div><button class="add" onclick="add(${p.id})">+ Keranjang</button></div></div>`).join('')||'<p style="grid-column:span 2;text-align:center;padding:20px">Tidak ditemukan</p>';
+}
+function add(id){cart[id]=(cart[id]||0)+1;update();}
+function update(){
+ let count=0,total=0; for(let id in cart){let p=products.find(x=>x.id==id);count+=cart[id];total+=p.price*cart[id];}
+ document.getElementById('cartCount').innerText=count;
+ document.getElementById('cartTotalTop').innerText=total.toLocaleString('id-ID');
+ document.getElementById('cartTotal').innerText=total.toLocaleString('id-ID');
+ let html=""; for(let id in cart){let p=products.find(x=>x.id==id);html+=`<div class="item"><span>${p.name}<br><small>Rp ${p.price.toLocaleString('id-ID')}</small></span><span class="qty"><button onclick="chg(${id},-1)">-</button>${cart[id]}<button onclick="chg(${id},1)">+</button></span></div>`;}
+ document.getElementById('cartList').innerHTML=html||'<p>Keranjang masih kosong</p>';
+}
+function chg(id,d){cart[id]+=d;if(cart[id]<=0)delete cart[id];update();}
+function openCart(){update();document.getElementById('cartModal').style.display='block';}
+function closeCart(){document.getElementById('cartModal').style.display='none';}
+function checkout(){
+ let total=0,msg="Halo LANGKAH Store, saya mau order:%0A";
+ for(let id in cart){let p=products.find(x=>x.id==id);total+=p.price*cart[id];msg+=`- ${p.name} x${cart[id]} = Rp ${(p.price*cart[id]).toLocaleString('id-ID')}%0A`;}
+ msg+=`Total: Rp ${total.toLocaleString('id-ID')}`;
+ if(total==0){alert("Keranjang masih kosong");return;}
+ window.open("https://wa.me/6283843653291?text="+msg,"_blank");
+}
 render();
 </script>
 </body>
