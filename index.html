@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LANGKAH Store</title>
+<style>
+body{font-family:system-ui;max-width:480px;margin:auto;background:#f6f6f6;padding:0 12px 100px}
+.banner{background:#111;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:20px;border-radius:16px}
+.banner h1{margin:0;font-size:32px}
+.cats{display:flex;gap:8px;margin:14px 0;overflow:auto}
+.cat{padding:8px 14px;border-radius:20px;border:1px solid #111;background:#fff;cursor:pointer}
+.cat.active{background:#ff6a00;color:#fff;border-color:#ff6a00}
+.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:12px;text-align:center}
+.card button{background:#ff6a00;color:#fff;border:0;padding:11px;width:100%;border-radius:10px;cursor:pointer;font-weight:700}
+.cart-bar{position:sticky;bottom:10px;background:#111;color:#fff;padding:12px;border-radius:12px;text-align:center}
+.cart-bar button{background:#25D366;border:0;padding:8px 12px;border-radius:8px;margin-left:6px;font-weight:700}
+</style>
+</head>
+<body>
+<header class="banner"><div><h1>Koleksi Baru</h1><p>LANGKAH Store - Bandung</p></div><div>👟</div></header>
+<div class="cats">
+<button class="cat active" data-cat="all">Semua</button>
+<button class="cat" data-cat="pria">Pria</button>
+<button class="cat" data-cat="wanita">Wanita</button>
+<button class="cat" data-cat="anak">Anak</button>
+<button class="cat" data-cat="sandal">Sandal</button>
+</div>
+<main id="produk-list"></main>
+<div class="cart-bar">Keranjang: <b id="cart-count">0</b> | Total: Rp <b id="cart-total">0</b> <button onclick="checkout()">Checkout WA</button></div>
+<script>
+const produk=[
+{id:1,nama:"Sepatu Sneakers Putih",harga:185000,kat:"pria",ukuran:"38-44",emoji:"👟"},
+{id:2,nama:"Sandal Jepit Hitam",harga:65000,kat:"sandal",ukuran:"38-44",emoji:"🩴"},
+{id:3,nama:"Sepatu Running Abu",harga:220000,kat:"pria",ukuran:"38-44",emoji:"👟"},
+{id:4,nama:"Sandal Slide Coklat",harga:85000,kat:"sandal",ukuran:"38-44",emoji:"🩴"},
+{id:5,nama:"Sepatu Sneakers Wanita Pink",harga:195000,kat:"wanita",ukuran:"36-41",emoji:"👟"},
+{id:6,nama:"Sandal Anak Dino Lucu",harga:55000,kat:"anak",ukuran:"28-35",emoji:"🦖"},
+];
+let cart=[],filter="all";
+function render(){const list=document.getElementById('produk-list');list.innerHTML=produk.filter(p=>filter==="all"||p.kat===filter).map(p=>`<div class="card"><div style="font-size:80px">${p.emoji}</div><h3>${p.nama}</h3><p>Rp ${p.harga.toLocaleString('id-ID')} - Ukuran ${p.ukuran}</p><button onclick="tambah(${p.id})">+ Keranjang</button></div>`).join('');}
+function tambah(id){cart.push(produk.find(p=>p.id===id));update();}
+function update(){document.getElementById('cart-count').innerText=cart.length;document.getElementById('cart-total').innerText=cart.reduce((a,b)=>a+b.harga,0).toLocaleString('id-ID');}
+function checkout(){const pesan=encodeURIComponent("Halo LANGKAH Store, saya mau pesan:\n"+cart.map(c=>"- "+c.nama).join("\n"));window.open("https://wa.me/6283843653291?text="+pesan,"_blank");}
+document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{document.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.cat;render();});
+render();
+</script>
+</body>
+</html>
